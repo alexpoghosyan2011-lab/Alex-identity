@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Identity - Alex | Interactive Portfolio</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffaff',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              900: '#164e63',
+              dark: '#0a0f1d',
+              card: '#111827',
+              border: '#1f2937'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #080c14;
+      color: #f3f4f6;
+      overflow-x: hidden;
+    }
+    .neon-glow {
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
+    }
+    .neon-text {
+      text-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080c14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2937;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #06b6d4;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Background Animated Drone Canvas -->
+  <canvas id="heroCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-50 glass-card border-b border-gray-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-cyan-500/30">
+          A
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-wider text-white">ALEX<span class="text-cyan-400">.ID</span></span>
+          <span class="block text-xs text-gray-400 font-mono">AGARAK // SYUNIK</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex space-x-1 lg:space-x-2">
+        <button onclick="scrollToSection('hero')" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400 transition" data-en="Home" data-hy="Գլխավոր">Home</button>
+        <button onclick="scrollToSection('about')" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400 transition" data-en="About Me" data-hy="Իմ Մասին">About Me</button>
+        <button onclick="scrollToSection('drones')" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400 transition" data-en="Drones & Tech" data-hy="Դրոններ & Տեխնիկա">Drones & Tech</button>
+        <button onclick="scrollToSection('movies')" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400 transition" data-en="Movies" data-hy="Ֆիլմեր">Movies</button>
+        <button onclick="scrollToSection('quiz')" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400 transition" data-en="Quiz" data-hy="Վիկտորինա">Quiz</button>
+        <button onclick="scrollToSection('slides')" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400 transition" data-en="Slide Deck" data-hy="Սլայդներ">Slide Deck</button>
+      </nav>
+
+      <!-- Language Toggle & Mobile Menu Button -->
+      <div class="flex items-center space-x-3">
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-lg bg-gray-800 border border-cyan-500/40 text-cyan-400 text-xs font-semibold hover:bg-cyan-500/10 transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-globe"></i>
+          <span id="currentLangLabel">HY / ՀԱՅ</span>
+        </button>
+
+        <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white p-2">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden bg-gray-900 border-b border-gray-800 px-4 pt-2 pb-4 space-y-2">
+      <button onclick="scrollToSection('hero'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400" data-en="Home" data-hy="Գլխավոր">Home</button>
+      <button onclick="scrollToSection('about'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400" data-en="About Me" data-hy="Իմ Մասին">About Me</button>
+      <button onclick="scrollToSection('drones'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400" data-en="Drones & Tech" data-hy="Դրոններ & Տեխնիկա">Drones & Tech</button>
+      <button onclick="scrollToSection('movies'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400" data-en="Movies" data-hy="Ֆիլմեր">Movies</button>
+      <button onclick="scrollToSection('quiz'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400" data-en="Quiz" data-hy="Վիկտորինա">Quiz</button>
+      <button onclick="scrollToSection('slides'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-sm font-medium text-gray-300 hover:text-cyan-400" data-en="Slide Deck" data-hy="Սլայդներ">Slide Deck</button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="relative z-10 space-y-24 pb-20">
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="min-h-[85vh] flex items-center justify-center pt-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center space-y-8">
+        <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-400 text-xs sm:text-sm font-medium">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span data-en="Personal Identity Project 2026" data-hy="Անձնական Ինքնության Նախագիծ 2026">Personal Identity Project 2026</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-tight">
+          <span data-en="Hi, I'm" data-hy="Ողջույն, ես">Hi, I'm</span> <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500 neon-text">Alex</span>
+        </h1>
+
+        <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light"
+           data-en="15-year-old drone pilot, tech explorer, and mystery enthusiast from Agarak, Syunik, Armenia."
+           data-hy="15-ամյա դրոնի պիլոտ, տեխնոլոգիաների սիրահար և դետեկտիվների երկրպագու Ագարակից (Սյունիք, Հայաստան)։">
+          15-year-old drone pilot, tech explorer, and mystery enthusiast from Agarak, Syunik, Armenia.
+        </p>
+
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto pt-4">
+          <div class="glass-card p-4 rounded-2xl text-center">
+            <div class="text-2xl font-bold text-cyan-400">15</div>
+            <div class="text-xs text-gray-400 mt-1" data-en="Years Old" data-hy="Տարեկան">Years Old</div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl text-center">
+            <div class="text-2xl font-bold text-cyan-400">Agarak</div>
+            <div class="text-xs text-gray-400 mt-1" data-en="Hometown" data-hy="Ծննդավայր">Hometown</div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl text-center">
+            <div class="text-2xl font-bold text-cyan-400"><i class="fa-solid fa-fan text-xl"></i></div>
+            <div class="text-xs text-gray-400 mt-1" data-en="Drone Pilot" data-hy="Դրոն Ղեկավարող">Drone Pilot</div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl text-center">
+            <div class="text-2xl font-bold text-cyan-400"><i class="fa-solid fa-user-shield text-xl"></i></div>
+            <div class="text-xs text-gray-400 mt-1" data-en="Empathic" data-hy="Ըմբռնող">Empathic</div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 pt-4">
+          <button onclick="scrollToSection('about')" class="px-6 py-3 rounded-xl bg-cyan-500 text-gray-950 font-semibold hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/25 flex items-center space-x-2">
+            <span data-en="Explore My Identity" data-hy="Ուսումնասիրել Ինքնությունը">Explore My Identity</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+          <button onclick="scrollToSection('droneSimulator')" class="px-6 py-3 rounded-xl glass-card text-cyan-400 font-semibold hover:bg-cyan-950/40 border border-cyan-500/30 transition flex items-center space-x-2">
+            <i class="fa-solid fa-gamepad"></i>
+            <span data-en="Try Drone Simulator" data-hy="Դրոնի Սիմուլյատոր">Try Drone Simulator</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: ABOUT ME -->
+    <section id="about" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="text-center space-y-3 mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-wide" data-en="01. About Me & Personal Traits" data-hy="01. Իմ Մասին և Բնավորությունը">01. About Me & Personal Traits</h2>
+        <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto" data-en="Who I am behind the screen and in my daily life." data-hy="Ով եմ ես էկրանից այն կողմ և իմ առօրյայում։">Who I am behind the screen and in my daily life.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <!-- Story Card -->
+        <div class="lg:col-span-7 glass-card p-6 sm:p-8 rounded-3xl space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-location-dot text-cyan-400 text-xl"></i>
+              <h3 class="text-xl font-bold text-white" data-en="Roots & Hometown" data-hy="Արմատներ և Ծննդավայր">Roots & Hometown</h3>
+            </div>
+            <p class="text-gray-300 leading-relaxed font-light"
+               data-en="I was born and raised in Agarak, a beautiful southern city in the Syunik region of Armenia. Living here connects me with nature, history, and a close-knit community that shapes my values."
+               data-hy="Ես ծնվել և ապրում եմ Հայաստանի Սյունիքի մարզի Ագարակ քաղաքում։ Այստեղ ապրելն ինձ կապում է բնության, պատմության և ջերմ համայնքի հետ, ինչն էլ ձևավորում է իմ արժեքները։">
+              I was born and raised in Agarak, a beautiful southern city in the Syunik region of Armenia. Living here connects me with nature, history, and a close-knit community that shapes my values.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-gray-900/80 border border-gray-800 space-y-2">
+            <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wider" data-en="Core Identity" data-hy="Էությունը">Core Identity</h4>
+            <p class="text-sm text-gray-300"
+               data-en="Kind-hearted, intelligent, quick to understand others, and always open to learning new things."
+               data-hy="Բարի, խելացի, ըմբռնող ու հասկացող, ով միշտ պատրաստ է սովորել նորը։">
+              Kind-hearted, intelligent, quick to understand others, and always open to learning new things.
+            </p>
+          </div>
+        </div>
+
+        <!-- Trait Cards Grid -->
+        <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Trait 1 -->
+          <div class="glass-card p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/50 transition">
+            <div class="w-10 h-10 rounded-xl bg-cyan-950/80 text-cyan-400 flex items-center justify-center text-lg mb-3">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <h4 class="font-bold text-white text-base mb-1" data-en="Kind & Caring" data-hy="Բարի և Հոգատար">Kind & Caring</h4>
+            <p class="text-xs text-gray-400" data-en="Treating people with respect and helpfulness." data-hy="Մարդկանց նկատմամբ հարգալից և օգնող։">Treating people with respect and helpfulness.</p>
+          </div>
+          <!-- Trait 2 -->
+          <div class="glass-card p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/50 transition">
+            <div class="w-10 h-10 rounded-xl bg-blue-950/80 text-blue-400 flex items-center justify-center text-lg mb-3">
+              <i class="fa-solid fa-brain"></i>
+            </div>
+            <h4 class="font-bold text-white text-base mb-1" data-en="Smart & Curious" data-hy="Խելացի և Հետաքրքրասեր">Smart & Curious</h4>
+            <p class="text-xs text-gray-400" data-en="Fascinated by engineering, hardware, and tech logic." data-hy="Հետաքրքրված ինժեներիայով և տեխնիկայով։">Fascinated by engineering, hardware, and tech logic.</p>
+          </div>
+          <!-- Trait 3 -->
+          <div class="glass-card p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/50 transition">
+            <div class="w-10 h-10 rounded-xl bg-teal-950/80 text-teal-400 flex items-center justify-center text-lg mb-3">
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+            <h4 class="font-bold text-white text-base mb-1" data-en="Understanding" data-hy="Ըմբռնող ու Հասկացող">Understanding</h4>
+            <p class="text-xs text-gray-400" data-en="Good listener who understands friends deeply." data-hy="Լավ լսող, ով խորապես հասկանում է ընկերներին։">Good listener who understands friends deeply.</p>
+          </div>
+          <!-- Trait 4 -->
+          <div class="glass-card p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/50 transition">
+            <div class="w-10 h-10 rounded-xl bg-indigo-950/80 text-indigo-400 flex items-center justify-center text-lg mb-3">
+              <i class="fa-solid fa-laptop-code"></i>
+            </div>
+            <h4 class="font-bold text-white text-base mb-1" data-en="Digital Native" data-hy="Թվային Սերունդ">Digital Native</h4>
+            <p class="text-xs text-gray-400" data-en="Exploring computers and mobile platforms daily." data-hy="Ամեն օր ուսումնասիրում է համակարգիչներն ու հեռախոսները։">Exploring computers and mobile platforms daily.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: TECH & DRONES -->
+    <section id="drones" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="text-center space-y-3 mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-wide" data-en="02. Drone Aviation & Tech Passion" data-hy="02. Դրոններ և Տեխնոլոգիաներ">02. Drone Aviation & Tech Passion</h2>
+        <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto" data-en="Controlling drones, exploring phone tech, and navigating computers." data-hy="Դրոնների կառավարում, հեռախոսային տեխնոլոգիաներ և համակարգչային աշխարհ։">Controlling drones, exploring phone tech, and navigating computers.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Interactive Drone Controls & Specs -->
+        <div class="glass-card p-6 rounded-3xl space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-drone text-cyan-400"></i>
+                <span data-en="Drone Technical Hub" data-hy="Դրոնի Տեխնիկական Հանգույց">Drone Technical Hub</span>
+              </h3>
+              <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 text-xs font-mono font-bold border border-cyan-500/30" data-en="ACTIVE" data-hy="ԱԿՏԻՎ">ACTIVE</span>
+            </div>
+            <p class="text-gray-300 text-sm leading-relaxed"
+               data-en="Flying drones is my passion. I love mastering quadcopter maneuvers, aerial mechanics, flight dynamics, and maintaining the hardware."
+               data-hy="Դրոններ ղեկավարելը իմ ամենասիրելի զբաղմունքն է։ Սիրում եմ ուսումնասիրել թռիչքային մեխանիկան, կառավարումը և տեխնիկական մասը։">
+              Flying drones is my passion. I love mastering quadcopter maneuvers, aerial mechanics, flight dynamics, and maintaining the hardware.
+            </p>
+          </div>
+
+          <!-- Feature Cards -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-3 bg-gray-900/80 rounded-xl border border-gray-800 text-center">
+              <div class="text-cyan-400 font-bold text-lg">Quad-Rotor</div>
+              <div class="text-xs text-gray-400" data-en="Stabilization Tech" data-hy="Ստաբիլիզացիա">Stabilization Tech</div>
+            </div>
+            <div class="p-3 bg-gray-900/80 rounded-xl border border-gray-800 text-center">
+              <div class="text-cyan-400 font-bold text-lg">Telemetry</div>
+              <div class="text-xs text-gray-400" data-en="Real-time Data" data-hy="Իրական ժամանակում">Real-time Data</div>
+            </div>
+            <div class="p-3 bg-gray-900/80 rounded-xl border border-gray-800 text-center">
+              <div class="text-cyan-400 font-bold text-lg">Smartphones</div>
+              <div class="text-xs text-gray-400" data-en="Mobile Apps & Tools" data-hy="Հավելվածներ">Mobile Apps & Tools</div>
+            </div>
+            <div class="p-3 bg-gray-900/80 rounded-xl border border-gray-800 text-center">
+              <div class="text-cyan-400 font-bold text-lg">PC Systems</div>
+              <div class="text-xs text-gray-400" data-en="Software & Media" data-hy="Ծրագրեր">Software & Media</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIMULATOR CANVAS CARD -->
+        <div id="droneSimulator" class="glass-card p-6 rounded-3xl space-y-4 border border-cyan-500/30">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-lg" data-en="Interactive 2D Flight Flight Preview" data-hy="Ինտերակտիվ Թռիչքի Սիմուլյատոր">Interactive 2D Flight Preview</h4>
+            <span class="text-xs text-gray-400 font-mono" data-en="Use Arrows/WASD or Touch Buttons" data-hy="Օգտագործեք Սլաքները կամ Կոճակները">Use Arrows/WASD</span>
+          </div>
+
+          <!-- Canvas area -->
+          <div class="relative w-full h-56 bg-gray-950 rounded-2xl overflow-hidden border border-gray-800 flex items-center justify-center">
+            <canvas id="simCanvas" class="w-full h-full"></canvas>
+            <div class="absolute top-3 left-3 bg-gray-900/80 px-2 py-1 rounded text-xs text-cyan-400 font-mono">
+              ALT: <span id="droneAlt">10</span>m | BAT: <span id="droneBat">98</span>%
+            </div>
+          </div>
+
+          <!-- Touch Controls for Mobile / On screen -->
+          <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+            <div></div>
+            <button onclick="moveDrone(0, -15)" class="p-2 bg-gray-800 rounded-lg text-cyan-400 active:bg-cyan-500 active:text-black transition"><i class="fa-solid fa-arrow-up"></i></button>
+            <div></div>
+            <button onclick="moveDrone(-15, 0)" class="p-2 bg-gray-800 rounded-lg text-cyan-400 active:bg-cyan-500 active:text-black transition"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="resetDrone()" class="p-2 bg-red-900/50 text-red-400 rounded-lg text-xs font-bold" data-en="RESET" data-hy="ՍԿԶԲԻՑ">RESET</button>
+            <button onclick="moveDrone(15, 0)" class="p-2 bg-gray-800 rounded-lg text-cyan-400 active:bg-cyan-500 active:text-black transition"><i class="fa-solid fa-arrow-right"></i></button>
+            <div></div>
+            <button onclick="moveDrone(0, 15)" class="p-2 bg-gray-800 rounded-lg text-cyan-400 active:bg-cyan-500 active:text-black transition"><i class="fa-solid fa-arrow-down"></i></button>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: ENTERTAINMENT & MOVIES -->
+    <section id="movies" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="text-center space-y-3 mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-wide" data-en="03. Detective & Crime Cinema" data-hy="03. Դետեկտիվ և Կրիմինալ Ֆիլմեր">03. Detective & Crime Cinema</h2>
+        <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto" data-en="My favorite genres that sharpen logic, deduction, and problem-solving." data-hy="Իմ սիրելի ժանրերը, որոնք զարգացնում են տրամաբանությունն ու ուշադրությունը։">My favorite genres that sharpen logic, deduction, and problem-solving.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Genre Card 1 -->
+        <div class="glass-card p-6 rounded-3xl space-y-4 hover:border-cyan-500/50 transition">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-950 text-cyan-400 flex items-center justify-center text-2xl">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white" data-en="Detective Mysteries" data-hy="Դետեկտիվ Հանելուկներ">Detective Mysteries</h3>
+          <p class="text-sm text-gray-300 font-light"
+             data-en="I love stories with clever plot twists, complex investigation cases, and logical puzzles where every detail counts."
+             data-hy="Սիրում եմ պատմություններ խելացի սյուժետային շրջադարձերով, բարդ հետաքննություններով և տրամաբանական հանելուկներով։">
+            I love stories with clever plot twists, complex investigation cases, and logical puzzles where every detail counts.
+          </p>
+          <div class="pt-2 flex items-center space-x-2 text-xs text-cyan-400 font-mono">
+            <i class="fa-solid fa-check"></i>
+            <span data-en="Sherlock / Mystery Vibe" data-hy="Շերլոքյան Ոճ">Sherlock / Mystery Vibe</span>
+          </div>
+        </div>
+
+        <!-- Genre Card 2 -->
+        <div class="glass-card p-6 rounded-3xl space-y-4 hover:border-cyan-500/50 transition">
+          <div class="w-12 h-12 rounded-2xl bg-blue-950 text-blue-400 flex items-center justify-center text-2xl">
+            <i class="fa-solid fa-masks-theater"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white" data-en="Crime Thrillers" data-hy="Կրիմինալ Թրիլերներ">Crime Thrillers</h3>
+          <p class="text-sm text-gray-300 font-light"
+             data-en="High stakes, tension, psychological depth, and seeing how minds interact under intense pressure."
+             data-hy="Լարվածություն, հոգեբանական խորություն և հետաքրքիր սյուժեներ, որոնք պահում են ուշադրությունը։">
+            High stakes, tension, psychological depth, and seeing how minds interact under intense pressure.
+          </p>
+          <div class="pt-2 flex items-center space-x-2 text-xs text-blue-400 font-mono">
+            <i class="fa-solid fa-check"></i>
+            <span data-en="Mind Games & Action" data-hy="Մտքի Խաղեր">Mind Games & Action</span>
+          </div>
+        </div>
+
+        <!-- Genre Card 3 -->
+        <div class="glass-card p-6 rounded-3xl space-y-4 hover:border-cyan-500/50 transition">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-950 text-indigo-400 flex items-center justify-center text-2xl">
+            <i class="fa-solid fa-film"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white" data-en="Interactive Watchlist" data-hy="Դիտման Ցանկ">Interactive Watchlist</h3>
+          <p class="text-sm text-gray-300 font-light"
+             data-en="Check out some iconic thriller/detective titles that match my taste in storytelling."
+             data-hy="Դետեկտիվ և թրիլեր ժանրի ֆիլմերի օրինակներ, որոնք համապատասխանում են իմ ճաշակին։">
+            Check out some iconic thriller/detective titles that match my taste in storytelling.
+          </p>
+          <ul class="text-xs text-gray-300 space-y-2 font-mono">
+            <li class="flex items-center space-x-2"><i class="fa-solid fa-play text-cyan-400 text-[10px]"></i> <span>Sherlock Holmes Series</span></li>
+            <li class="flex items-center space-x-2"><i class="fa-solid fa-play text-cyan-400 text-[10px]"></i> <span>Knives Out / Glass Onion</span></li>
+            <li class="flex items-center space-x-2"><i class="fa-solid fa-play text-cyan-400 text-[10px]"></i> <span>Now You See Me</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: INTERACTIVE QUIZ -->
+    <section id="quiz" class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="glass-card p-6 sm:p-10 rounded-3xl border border-cyan-500/40 relative overflow-hidden">
+        <div class="text-center space-y-2 mb-8">
+          <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 text-xs font-mono font-bold" data-en="INTERACTIVE MINI-GAME" data-hy="ԻՆՏԵՐԱԿՏԻՎ ԽԱՂ">INTERACTIVE MINI-GAME</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white" data-en="How Well Do You Know Alex?" data-hy="Որքանո՞վ ես ճանաչում Ալեքսին">How Well Do You Know Alex?</h2>
+          <p class="text-xs sm:text-sm text-gray-400" data-en="Take this 5-question quiz based on Alex's identity profile." data-hy="Պատասխանիր 5 հարցերին և ստուգիր գիտելիքներդ։">Take this 5-question quiz based on Alex's identity profile.</p>
+        </div>
+
+        <div id="quizContainer" class="space-y-6">
+          <div class="flex justify-between items-center text-xs text-gray-400 font-mono">
+            <span id="quizProgress" data-en="Question 1 of 5" data-hy="Հարց 1 / 5">Question 1 of 5</span>
+            <span id="quizScore" class="text-cyan-400 font-bold">Score: 0</span>
+          </div>
+
+          <div id="questionBox" class="p-4 bg-gray-900/90 rounded-2xl border border-gray-800">
+            <h3 id="questionText" class="font-semibold text-white text-base sm:text-lg">Loading question...</h3>
+          </div>
+
+          <div id="optionsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Dynamic Options generated by JS -->
+          </div>
+
+          <div id="quizFeedback" class="hidden p-3 rounded-xl text-center text-sm font-semibold"></div>
+        </div>
+
+        <div id="quizResult" class="hidden text-center space-y-4 py-6">
+          <div class="w-16 h-16 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-3xl mx-auto">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-white" data-en="Quiz Completed!" data-hy="Վիկտորինան Ավարտվեց։">Quiz Completed!</h3>
+          <p id="finalScoreText" class="text-gray-300 text-lg">You scored 5 out of 5!</p>
+          <button onclick="restartQuiz()" class="px-6 py-2.5 rounded-xl bg-cyan-500 text-gray-950 font-bold hover:bg-cyan-400 transition" data-en="Try Again" data-hy="Փորձել Կրկին">Try Again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: SLIDE DECK GENERATOR / VIEWER -->
+    <section id="slides" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="text-center space-y-3 mb-10">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-wide" data-en="05. Presentation Slide Deck Viewer" data-hy="05. Սլայդների Նկարագրություն">05. Presentation Slide Deck Viewer</h2>
+        <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto"
+           data-en="Slide structure descriptions ready for school presentation."
+           data-hy="Սլայդների կառուցվածքն ու նկարագրությունները՝ դպրոցական նախագծի համար։">
+          Slide structure descriptions ready for school presentation.
+        </p>
+      </div>
+
+      <!-- Slide Controls and Viewer -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border border-cyan-500/30 space-y-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-800 pb-4">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+            <span class="text-xs text-gray-400 font-mono ml-2" id="slideNumIndicator">SLIDE 1 / 5</span>
+          </div>
+
+          <div class="flex space-x-2">
+            <button onclick="prevSlide()" class="px-4 py-2 rounded-xl bg-gray-800 text-cyan-400 hover:bg-gray-700 transition text-xs font-bold flex items-center gap-1">
+              <i class="fa-solid fa-chevron-left"></i>
+              <span data-en="Prev" data-hy="Նախորդ">Prev</span>
+            </button>
+            <button onclick="nextSlide()" class="px-4 py-2 rounded-xl bg-cyan-500 text-gray-950 hover:bg-cyan-400 transition text-xs font-bold flex items-center gap-1">
+              <span data-en="Next" data-hy="Հաջորդ">Next</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Slide Display Box -->
+        <div class="min-h-[220px] bg-gray-950 p-6 rounded-2xl border border-gray-800/80 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div id="slideBadge" class="inline-block px-3 py-1 rounded-md bg-cyan-950 text-cyan-400 text-xs font-mono font-bold">SLIDE 1</div>
+            <h3 id="slideTitle" class="text-xl sm:text-2xl font-bold text-white">Slide Title</h3>
+            <p id="slideContent" class="text-gray-300 text-sm sm:text-base leading-relaxed font-light">Slide content text here...</p>
+          </div>
+
+          <div class="pt-4 border-t border-gray-900 mt-4 text-xs text-gray-500 font-mono flex items-center justify-between">
+            <span data-en="Format: Presentation Ready" data-hy="Ձևաչափ՝ Պատրաստի Ցուցադրություն">Format: Presentation Ready</span>
+            <span data-en="Topic: My Identity" data-hy="Թեմա՝ My Identity">Topic: My Identity</span>
+          </div>
+        </div>
+
+        <!-- Quick Slide Selectors -->
+        <div class="grid grid-cols-5 gap-2 pt-2">
+          <button onclick="goToSlide(0)" class="slideBtn p-2 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-cyan-400 text-center font-mono font-bold">1</button>
+          <button onclick="goToSlide(1)" class="slideBtn p-2 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-cyan-400 text-center font-mono font-bold">2</button>
+          <button onclick="goToSlide(2)" class="slideBtn p-2 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-cyan-400 text-center font-mono font-bold">3</button>
+          <button onclick="goToSlide(3)" class="slideBtn p-2 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-cyan-400 text-center font-mono font-bold">4</button>
+          <button onclick="goToSlide(4)" class="slideBtn p-2 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-cyan-400 text-center font-mono font-bold">5</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="glass-card border-t border-gray-800 py-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+      <div class="text-cyan-400 font-bold tracking-wider text-sm">ALEX // MY IDENTITY PORTFOLIO</div>
+      <p class="text-xs text-gray-500" data-en="Designed for Alex • Agarak, Syunik Province, Armenia • 2026" data-hy="Պատրաստված է Ալեքսի համար • Ագարակ, Սյունիք, Հայաստան • 2026">
+        Designed for Alex • Agarak, Syunik Province, Armenia • 2026
+      </p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. LANGUAGE TOGGLE STATE & DATA
+    // -------------------------------------------------------------
+    let currentLang = 'en'; // 'en' or 'hy'
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'hy' : 'en';
+      document.getElementById('currentLangLabel').innerText = currentLang === 'en' ? 'HY / ՀԱՅ' : 'EN / ԱՆԳ';
+      
+      // Update DOM elements
+      document.querySelectorAll('[data-en]').forEach(el => {
+        const text = el.getAttribute(`data-${currentLang}`);
+        if (text) el.innerText = text;
+      });
+
+      // Reload active slide & quiz to match language
+      renderSlide();
+      renderQuestion();
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // -------------------------------------------------------------
+    // 2. HERO CANVAS PARTICLES / ANIMATED BACKGROUND
+    // -------------------------------------------------------------
+    const heroCanvas = document.getElementById('heroCanvas');
+    const hCtx = heroCanvas.getContext('2d');
+    let particles = [];
+
+    function resizeHeroCanvas() {
+      heroCanvas.width = window.innerWidth;
+      heroCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeHeroCanvas);
+    resizeHeroCanvas();
+
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        size: Math.random() * 2 + 1
+      });
+    }
+
+    function animateHeroCanvas() {
+      hCtx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+      hCtx.fillStyle = '#22d3ee';
+      hCtx.strokeStyle = 'rgba(34, 211, 238, 0.15)';
+
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > heroCanvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > heroCanvas.height) p.vy *= -1;
+
+        hCtx.beginPath();
+        hCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        hCtx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          let p2 = particles[j];
+          let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 130) {
+            hCtx.beginPath();
+            hCtx.moveTo(p.x, p.y);
+            hCtx.lineTo(p2.x, p2.y);
+            hCtx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateHeroCanvas);
+    }
+    animateHeroCanvas();
+
+    // -------------------------------------------------------------
+    // 3. DRONE SIMULATOR CANVAS
+    // -------------------------------------------------------------
+    const simCanvas = document.getElementById('simCanvas');
+    const sCtx = simCanvas.getContext('2d');
+    let droneX = 150;
+    let droneY = 100;
+
+    function resizeSimCanvas() {
+      if (simCanvas.parentElement) {
+        simCanvas.width = simCanvas.parentElement.clientWidth;
+        simCanvas.height = simCanvas.parentElement.clientHeight;
+        droneX = simCanvas.width / 2;
+        droneY = simCanvas.height / 2;
+      }
+    }
+    window.addEventListener('resize', resizeSimCanvas);
+    setTimeout(resizeSimCanvas, 100);
+
+    function moveDrone(dx, dy) {
+      droneX = Math.max(20, Math.min(simCanvas.width - 20, droneX + dx));
+      droneY = Math.max(20, Math.min(simCanvas.height - 20, droneY + dy));
+      drawDrone();
+    }
+
+    function resetDrone() {
+      droneX = simCanvas.width / 2;
+      droneY = simCanvas.height / 2;
+      drawDrone();
+    }
+
+    function drawDrone() {
+      sCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+
+      // Grid Lines
+      sCtx.strokeStyle = '#1e293b';
+      sCtx.lineWidth = 1;
+      for (let x = 0; x < simCanvas.width; x += 30) {
+        sCtx.beginPath();
+        sCtx.moveTo(x, 0);
+        sCtx.lineTo(x, simCanvas.height);
+        sCtx.stroke();
+      }
+      for (let y = 0; y < simCanvas.height; y += 30) {
+        sCtx.beginPath();
+        sCtx.moveTo(0, y);
+        sCtx.lineTo(simCanvas.width, y);
+        sCtx.stroke();
+      }
+
+      // Drone Body Arms
+      sCtx.strokeStyle = '#06b6d4';
+      sCtx.lineWidth = 3;
+      sCtx.beginPath();
+      sCtx.moveTo(droneX - 18, droneY - 18);
+      sCtx.lineTo(droneX + 18, droneY + 18);
+      sCtx.moveTo(droneX + 18, droneY - 18);
+      sCtx.lineTo(droneX - 18, droneY + 18);
+      sCtx.stroke();
+
+      // Rotors
+      sCtx.fillStyle = '#22d3ee';
+      const rPos = [[-18,-18], [18,-18], [-18,18], [18,18]];
+      rPos.forEach(([rx, ry]) => {
+        sCtx.beginPath();
+        sCtx.arc(droneX + rx, droneY + ry, 7, 0, Math.PI * 2);
+        sCtx.fill();
+      });
+
+      // Drone Center
+      sCtx.fillStyle = '#ffffff';
+      sCtx.beginPath();
+      sCtx.arc(droneX, droneY, 6, 0, Math.PI * 2);
+      sCtx.fill();
+    }
+    setTimeout(drawDrone, 200);
+
+    // Keyboard controls for simulator
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowUp', 'KeyW'].includes(e.code)) moveDrone(0, -10);
+      if (['ArrowDown', 'KeyS'].includes(e.code)) moveDrone(0, 10);
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) moveDrone(-10, 0);
+      if (['ArrowRight', 'KeyD'].includes(e.code)) moveDrone(10, 0);
+    });
+
+    // -------------------------------------------------------------
+    // 4. QUIZ GAME DATA & LOGIC
+    // -------------------------------------------------------------
+    const quizData = [
+      {
+        q: { en: "How old is Alex?", hy: "Քանի՞ տարեկան է Ալեքսը:" },
+        options: ["14", "15", "16", "17"],
+        answer: 1
+      },
+      {
+        q: { en: "Where does Alex live?", hy: "Որտե՞ղ է ապրում Ալեքսը:" },
+        options: ["Yerevan", "Goris", "Agarak, Syunik", "Kapan"],
+        answer: 2
+      },
+      {
+        q: { en: "What is Alex's main tech hobby?", hy: "Ո՞րն է Ալեքսի տեխնոլոգիական հոբբին:" },
+        options: ["Flying and working with drones", "3D Printing", "Game Streaming", "Robotics Competition"],
+        answer: 0
+      },
+      {
+        q: { en: "Which film genres does Alex enjoy watching?", hy: "Ո՞ր ֆիլմերն է սիրում դիտել Ալեքսը:" },
+        options: ["Romance & Comedy", "Detective & Crime", "Fantasy & Sci-Fi", "Documentaries"],
+        answer: 1
+      },
+      {
+        q: { en: "Which words best describe Alex's character?", hy: "Ո՞ր բառերն են լավագույնս նկարագրում Ալեքսին:" },
+        options: ["Loud & Rash", "Kind, smart, & understanding", "Shy & Quiet", "Strict & Serious"],
+        answer: 1
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      if (currentQ >= quizData.length) {
+        showQuizResults();
+        return;
+      }
+
+      const qObj = quizData[currentQ];
+      document.getElementById('quizProgress').innerText = currentLang === 'en' 
+        ? `Question ${currentQ + 1} of ${quizData.length}`
+        : `Հարց ${currentQ + 1} / ${quizData.length}`;
+      
+      document.getElementById('quizScore').innerText = `Score: ${score}`;
+      document.getElementById('questionText').innerText = qObj.q[currentLang];
+
+      const optionsBox = document.getElementById('optionsBox');
+      optionsBox.innerHTML = '';
+
+      qObj.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "p-3 bg-gray-800 hover:bg-cyan-950/60 hover:border-cyan-500 border border-gray-700 rounded-xl text-left text-sm text-gray-200 transition font-medium";
+        btn.innerText = opt;
+        btn.onclick = () => handleAnswer(idx);
+        optionsBox.appendChild(btn);
+      });
+
+      document.getElementById('quizFeedback').classList.add('hidden');
+    }
+
+    function handleAnswer(selectedIdx) {
+      const correctIdx = quizData[currentQ].answer;
+      const feedback = document.getElementById('quizFeedback');
+      feedback.classList.remove('hidden', 'bg-green-900/60', 'bg-red-900/60', 'text-green-300', 'text-red-300');
+
+      if (selectedIdx === correctIdx) {
+        score++;
+        feedback.classList.add('bg-green-900/60', 'text-green-300');
+        feedback.innerText = currentLang === 'en' ? "Correct! 🎉" : "Ճիշտ է! 🎉";
+      } else {
+        feedback.classList.add('bg-red-900/60', 'text-red-300');
+        feedback.innerText = currentLang === 'en' ? "Incorrect!" : "Սխալ է!";
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        renderQuestion();
+      }, 1000);
+    }
+
+    function showQuizResults() {
+      document.getElementById('quizContainer').classList.add('hidden');
+      const res = document.getElementById('quizResult');
+      res.classList.remove('hidden');
+      document.getElementById('finalScoreText').innerText = currentLang === 'en'
+        ? `You scored ${score} out of ${quizData.length}!`
+        : `Դուք հավաքեցիք ${score} միավոր ${quizData.length}-ից։`;
+    }
+
+    function restartQuiz() {
+      currentQ = 0;
+      score = 0;
+      document.getElementById('quizResult').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      renderQuestion();
+    }
+    renderQuestion();
+
+    // -------------------------------------------------------------
+    // 5. SLIDE DECK GENERATOR DATA & LOGIC
+    // -------------------------------------------------------------
+    const slideData = [
+      {
+        badge: "SLIDE 1",
+        title: { en: "Slide 1: Title & Introduction", hy: "Սլայդ 1. Վերնագիր և Ներկայացում" },
+        content: {
+          en: "• Title: My Identity\n• Subtitle: Who Am I?\n• Presenter: Alex (15 years old)\n• Location: Agarak, Syunik Province, Armenia\n• Visual Concept: Dark tech aesthetic with a drone icon and high-tech typography.",
+          hy: "• Վերնագիր՝ My Identity (Իմ Ինքնությունը)\n• Ենթավերնագիր՝ Ո՞վ եմ ես\n• Ներկայացնող՝ Ալեքս (15 տարեկան)\n• Վայր՝ Ագարակ, Սյունիք, Հայաստան\n• Վիզուալ ոճ՝ Թվային տեխնոլոգիական ֆոն դրոնի պատկերով։"
+        }
+      },
+      {
+        badge: "SLIDE 2",
+        title: { en: "Slide 2: Roots & Personality Traits", hy: "Սլայդ 2. Արմատներ և Բնավորություն" },
+        content: {
+          en: "• Hometown: Agarak (Syunik Region, Armenia)\n• Key Traits: Kind, smart, understanding, empathetic\n• Personal Values: Respecting people, learning continuously, maintaining meaningful friendships.",
+          hy: "• Ծննդավայր՝ Ագարակ (Սյունիքի մարզ, Հայաստան)\n• Բնավորության գծեր՝ Բարի, խելացի, ըմբռնող, հասկացող\n• Արժեքներ՝ Հարգանք մարդկանց նկատմամբ, սովորելու ձգտում, ընկերություն։"
+        }
+      },
+      {
+        badge: "SLIDE 3",
+        title: { en: "Slide 3: Passion for Drones & Technology", hy: "Սլայդ 3. Դրոններ և Տեխնոլոգիաներ" },
+        content: {
+          en: "• Main Hobby: Flying, operating, and customizing drones\n• Tech Life: Spending dedicated time exploring phone software & computer capabilities\n• Goal: Understanding tech mechanisms and aerial innovation.",
+          hy: "• Հոբբի՝ Դրոններ ղեկավարելն ու դրանցով զբաղվելը\n• Թվային Աշխարհ՝ Հեռախոսների և համակարգչային ծրագրերի ուսումնասիրություն\n• Նպատակ՝ Տեխնոլոգիական մեխանիզմների բացահայտում։"
+        }
+      },
+      {
+        badge: "SLIDE 4",
+        title: { en: "Slide 4: Entertainment & Movies", hy: "Սլայդ 4. Ֆիլմեր և Նախասիրություններ" },
+        content: {
+          en: "• Favorite Genres: Detective stories & Crime thrillers\n• Why?: They challenge logic, require keen perception, and present complex mystery solving\n• Key Takeaway: Observation and critical thinking are essential skills.",
+          hy: "• Սիրելի ժանրեր՝ Դետեկտիվ և Կրիմինալ ֆիլմեր\n• Ինչու՞՝ Զարգացնում են տրամաբանությունը, ուշադրությունը և հանելուկներ լուծելու ունակությունը\n• Եզրակացություն՝ Վերլուծական մտածողությունը կարևոր հմտություն է։"
+        }
+      },
+      {
+        badge: "SLIDE 5",
+        title: { en: "Slide 5: Conclusion & Reflection", hy: "Սլայդ 5. Եզրակացություն" },
+        content: {
+          en: "• Summary: Alex = Tech Enthusiasm + Empathy + Curiosity\n• Future Outlook: Continuing to grow in tech, drone mechanics, and problem-solving\n• Closing Quote: 'Technology and empathy define my journey.'",
+          hy: "• Ամփոփում՝ Ալեքս = Տեխնիկայի սեր + Ըմբռնում + Հետաքրքրասիրություն\n• Ապագայի տեսլական՝ Զարգանալ տեխնոլոգիաների և ինժեներիայի ոլորտում\n• Ավարտական միտք՝ «Տեխնոլոգիաներն ու մարդկայնությունը ձևավորում են իմ ճանապարհը»։"
+        }
+      }
+    ];
+
+    let currentSlide = 0;
+
+    function renderSlide() {
+      const s = slideData[currentSlide];
+      document.getElementById('slideBadge').innerText = s.badge;
+      document.getElementById('slideTitle').innerText = s.title[currentLang];
+      document.getElementById('slideContent').innerText = s.content[currentLang];
+      document.getElementById('slideNumIndicator').innerText = `SLIDE ${currentSlide + 1} / ${slideData.length}`;
+
+      // Highlight button
+      document.querySelectorAll('.slideBtn').forEach((btn, idx) => {
+        if (idx === currentSlide) {
+          btn.classList.add('bg-cyan-500', 'text-gray-950');
+          btn.classList.remove('bg-gray-800', 'text-gray-300');
+        } else {
+          btn.classList.remove('bg-cyan-500', 'text-gray-950');
+          btn.classList.add('bg-gray-800', 'text-gray-300');
+        }
+      });
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slideData.length;
+      renderSlide();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slideData.length) % slideData.length;
+      renderSlide();
+    }
+
+    function goToSlide(idx) {
+      currentSlide = idx;
+      renderSlide();
+    }
+
+    // Initial render
+    renderSlide();
+  </script>
+</body>
+</html>
